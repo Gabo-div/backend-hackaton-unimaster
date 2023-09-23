@@ -1,67 +1,69 @@
-import { Router } from 'express'
-import { prisma } from '../db'
-import bcrypt from 'bcrypt'
-
+import { Router } from "express";
+import { prisma } from "../db";
+import bcrypt from "bcrypt";
+import { registerSchema } from "../types/Register";
+import parseBody from "../utils/parseBody";
+import { ErrorCode, HTTPError } from "../utils/HTTPError";
+import asyncHandler from "express-async-handler";
+import jwt from "jsonwebtoken";
 
 const router = Router();
 
-router.post('/login', async (req, res) => {
-	const { email, password } = req.body
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-	// Find user by email
-	const user = await prisma.user.findUnique({ 
-		where: { email }
-	})
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
 
-	// Check if user exists
-	if (!user) {
-		return res.status(404).json({ message: 'User not found' }) 
-	}
+  if (!user) {
+    throw new HTTPError(404, ErrorCode.NOT_FOUND, "User not found");
+  }
 
-	// Validate password
-	const isValid = await bcrypt.compare(password, user.password)
+  const isValid = await bcrypt.compare(password, user.password);
 
-	if (!isValid) {
-		return res.status(401).json({ message: 'Invalid credentials' })
-	}
+  if (!isValid) {
+    throw new HTTPError(400, ErrorCode.BAD_REQUEST, "Invalid credentials");
+  }
 
-	/* Generate JWT Token
-	const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET)
+  const token = jwt.sign(user, process.env.JWT_SECRET as string);
 
-	res.status(200).json({
-		message: 'Login successful!',
-		token
-	})*/
-
-	res.status(200).json({message: 'Login successful'})
-
+  res.status(200).json({
+    data: {
+      token,
+    },
+    error: null,
+  });
 });
 
-router.post('/register', async (req, res) => {
+router.post(
+  "/register",
+  asyncHandler(async (req, res) => {
+    const { email, name, password } = await parseBody(registerSchema, req.body);
 
-	const { name, email, password } = req.body
+    const emailAlreadyExists = await prisma.user.findUnique({
+      where: { email },
+    });
 
-	// Check if email exists
-	const emailAlreadyExists = await prisma.user.findUnique({
-		where: { email }
-	})
+    if (emailAlreadyExists) throw new HTTPError(400, ErrorCode.BAD_REQUEST, "El email ya existe");
 
-	if (emailAlreadyExists) {
-		return res.status(400).json({ message: "Email already exists" })
-	}
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-	// Encrypt password
-	const hashedPassword = await bcrypt.hash(password, 10)
+    const { password: _userPassword, ...userData } = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
+    });
 
-	const newUser = await prisma.user.create({
-		data: {
-			name,
-			email,
-			password: hashedPassword
-		} 
-	})
-
-	res.status(201).json({ message: 'User register success' })
-});
+    res.status(201).json({
+      data: {
+        user: userData,
+      },
+      error: null,
+    });
+  })
+);
 
 export default router;
