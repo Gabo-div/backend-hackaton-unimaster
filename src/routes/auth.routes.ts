@@ -9,8 +9,10 @@ import jwt from "jsonwebtoken";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+
+router.post("/login", asyncHandler(async (req, res) => {
+
+  const { email, password } = await parseBody(registerSchema, req.body);
 
   const user = await prisma.user.findUnique({
     where: { email },
@@ -34,36 +36,36 @@ router.post("/login", async (req, res) => {
     },
     error: null,
   });
-});
 
-router.post(
-  "/register",
-  asyncHandler(async (req, res) => {
-    const { email, name, password } = await parseBody(registerSchema, req.body);
+}))
 
-    const emailAlreadyExists = await prisma.user.findUnique({
-      where: { email },
-    });
+router.post("/register", asyncHandler(async (req, res) => {
 
-    if (emailAlreadyExists) throw new HTTPError(400, ErrorCode.BAD_REQUEST, "El email ya existe");
+  const { email, name, password } = await parseBody(registerSchema, req.body);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+  const emailAlreadyExists = await prisma.user.findUnique({
+    where: { email },
+  });
 
-    const { password: _userPassword, ...userData } = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
+  if (emailAlreadyExists) throw new HTTPError(400, ErrorCode.BAD_REQUEST, "El email ya existe");
 
-    res.status(201).json({
-      data: {
-        user: userData,
-      },
-      error: null,
-    });
-  })
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const { password: _userPassword, ...userData } = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+    },
+  });
+
+  res.status(201).json({
+    data: {
+      user: userData,
+    },
+    error: null,
+  });
+})
 );
 
 export default router;
