@@ -10,17 +10,17 @@ import jwt from "jsonwebtoken";
 const router = Router();
 
 
-router.post("/login", asyncHandler(async (req, res) => {
+// router.post("/login", asyncHandler(async (req, res) => {
 
   
 
-  // res.status(201).json({
-  //   data: {
-  //     user: userData,
-  //   },
-  //   error: null,
-  // });
+//   // res.status(201).json({
+//   //   data: {
+//   //     user: userData,
+//   //   },
+//   //   error: null,
+//   // });
 
-}))
+// }))
 
 export default router;
