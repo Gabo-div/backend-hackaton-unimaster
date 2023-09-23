@@ -10,9 +10,26 @@ import jwt from "jsonwebtoken";
 const router = Router();
 
 
-// router.post("/login", asyncHandler(async (req, res) => {
 
-  
+
+// router.get("/all", asyncHandler(async (req, res) => {
+
+//     const semesters = await prisma.semester.findMany()
+//     res.json(semesters)
+//     // res.status(201).json({
+//     //   data: {
+//     //     semesters: semesters
+//     //   },
+//     //   error: null
+//     // })
+
+// }))
+
+router.get("/all", asyncHandler(async(req, res) => {
+    const semesters = await prisma.user.findMany()
+    res.json(semesters)
+
+}))
 
 //   // res.status(201).json({
 //   //   data: {
@@ -20,7 +37,5 @@ const router = Router();
 //   //   },
 //   //   error: null,
 //   // });
-
-// }))
 
 export default router;
