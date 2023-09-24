@@ -12,7 +12,7 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
 
   jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
     if (err) {
-      throw new HTTPError(403, ErrorCode.FORBIDDEN, "Invalid Tokenj");
+      throw new HTTPError(403, ErrorCode.FORBIDDEN, "Invalid Token");
     }
 
     const { iat, ...userData } = user as User & {
