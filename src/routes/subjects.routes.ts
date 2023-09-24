@@ -27,12 +27,14 @@ router.get(
 router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
   if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
+  const { name, teacher, uc, semesterId } = req.body
+
   const newSubject = await prisma.subject.create({
     data: {
-      name: req.body.name,
-      teacher: req.body.teacher,
-      uc: req.body.uc,
-      semesterId: req.body.semesterId
+      name,
+      teacher,
+      uc,
+      semesterId // Aqui se necesita hacer un connect rico
     }
   })
 
@@ -44,18 +46,20 @@ router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
   })
 }))
 
-router.put("/:id", authenticateJWT, asyncHandler(async (req, res) => {
+router.put("/update/:id", authenticateJWT, asyncHandler(async (req, res) => {
   if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+
+  const { name, teacher, uc, semesterId } = req.body
 
   const newSubject = await prisma.subject.update({
     where: {
       id: +req.params.id
     },
     data: {
-      name: req.body.name,
-      teacher: req.body.teacher,
-      uc: req.body.uc,
-      semesterId: req.body.semesterId
+      name,
+      teacher,
+      uc,
+      semesterId // Aqui se necesita hacer un connect rico quiza
     }
   })
 
@@ -68,7 +72,7 @@ router.put("/:id", authenticateJWT, asyncHandler(async (req, res) => {
 
 }))
 
-router.delete("/:id", authenticateJWT, asyncHandler(async (req, res) => {
+router.delete("/delete/:id", authenticateJWT, asyncHandler(async (req, res) => {
   if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
   const subject = await prisma.subject.delete({
