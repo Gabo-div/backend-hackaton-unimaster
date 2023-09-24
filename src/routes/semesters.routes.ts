@@ -28,7 +28,7 @@ router.get(
   })
 );
 
-router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
+router.post("/", authenticateJWT, asyncHandler(async (req, res) => {
     if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
     const newSemester = await prisma.semester.create({
@@ -47,7 +47,7 @@ router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
 
 }))
 
-router.put("/update/:id", authenticateJWT, asyncHandler(async (req, res) => {
+router.put("/:id", authenticateJWT, asyncHandler(async (req, res) => {
     if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
     const newSemester = await prisma.semester.update({
@@ -68,7 +68,7 @@ router.put("/update/:id", authenticateJWT, asyncHandler(async (req, res) => {
 
 }))
 
-  router.delete("/delete/:id", authenticateJWT, asyncHandler(async (req, res) => {
+  router.delete("/:id", authenticateJWT, asyncHandler(async (req, res) => {
     if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
     const semester = await prisma.semester.delete({
