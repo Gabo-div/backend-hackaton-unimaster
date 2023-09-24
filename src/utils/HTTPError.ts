@@ -3,6 +3,7 @@ export enum ErrorCode {
   CONFLICT = "conflict",
   NOT_FOUND = "not_found",
   UNAUTHORIZED = "unauthorized",
+  FORBIDDEN = "forbidden",
 }
 
 export class HTTPError {

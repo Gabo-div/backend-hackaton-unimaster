@@ -19,11 +19,8 @@ model User {
 model Semester {
   id         Int     @id @default(autoincrement())
   name       String
-  emoji_icon String?
-
   user   User? @relation(fields: [userId], references: [id])
   userId Int?
-
   subjects Subject[]
 }
 
