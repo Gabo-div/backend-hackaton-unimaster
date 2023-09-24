@@ -17,7 +17,7 @@ router.post("/login", asyncHandler(async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { email },
   });
-  
+
   if (!user) {
     throw new HTTPError(404, ErrorCode.NOT_FOUND, "User not found");
   }

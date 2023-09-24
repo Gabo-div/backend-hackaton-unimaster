@@ -6,28 +6,21 @@ import parseBody from "../utils/parseBody";
 import { ErrorCode, HTTPError } from "../utils/HTTPError";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
+import  { authenticateJWT }  from "../middlewares/jwtHandler"
 
 const router = Router();
 
+router.get("/show", asyncHandler(async(req, res) => {
+    const users = await prisma.user.findMany()
+    res.json(users)
+
+}))
 
 
-
-// router.get("/all", asyncHandler(async (req, res) => {
-
-//     const semesters = await prisma.semester.findMany()
-//     res.json(semesters)
-//     // res.status(201).json({
-//     //   data: {
-//     //     semesters: semesters
-//     //   },
-//     //   error: null
-//     // })
-
-// }))
-
-router.get("/all", asyncHandler(async(req, res) => {
-    const semesters = await prisma.user.findMany()
-    res.json(semesters)
+router.get("", authenticateJWT, asyncHandler(async(req, res) => {
+    const semesters = await prisma.semester.findMany({
+      where: req.user.id
+    })
 
 }))
 

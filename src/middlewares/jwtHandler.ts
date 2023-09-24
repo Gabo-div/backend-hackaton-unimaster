@@ -1,13 +1,16 @@
 import jwt from "jsonwebtoken";
 import { ErrorCode, HTTPError } from "../utils/HTTPError";
+import { Request, Response, NextFunction } from "express";
 
-const authenticateJWT = (req:any, res:any, next:any) => {
+
+export const authenticateJWT = (req:Request, res:Response, next:NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
         const token = authHeader.split(' ')[1];
 
-        jwt.verify(token, process.env.JWT_SECRET as string, (err:any, user:any) => {
+        jwt.verify(token, process.env.JWT_SECRET as string, (err:any, user: any) => {
+
 
             if (err) { // Forbidden
                 return res.status(403).json({
@@ -17,7 +20,7 @@ const authenticateJWT = (req:any, res:any, next:any) => {
 
             }
 
-            req.user = user;
+            req.user = user 
             next();
         });
 
