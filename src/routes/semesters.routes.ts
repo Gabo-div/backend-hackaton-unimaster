@@ -18,7 +18,7 @@ router.get(
       },
     });
 
-    res.status(201).json({
+    res.status(200).json({
       data: {
         semesters: semesters
       },
@@ -77,12 +77,7 @@ router.put("/update/:id", authenticateJWT, asyncHandler(async (req, res) => {
       }  
     })
 
-    res.status(201).json({
-      data: {
-        semester: semester
-      },
-      error: null
-    })
+    res.status(204).end()
 
   }))
 
