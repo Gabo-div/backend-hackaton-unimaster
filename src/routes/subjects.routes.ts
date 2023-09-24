@@ -32,7 +32,7 @@ router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
       name: req.body.name,
       teacher: req.body.teacher,
       uc: req.body.uc,
-      semesterId: req.body.semesterId
+      semesterId: req.body.semesterId // Aquí tiene que haber conexion
     }
   })
 

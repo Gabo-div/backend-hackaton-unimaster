@@ -1,11 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../db";
-import bcrypt from "bcrypt";
-import { registerSchema } from "../types/Register";
-import parseBody from "../utils/parseBody";
 import { ErrorCode, HTTPError } from "../utils/HTTPError";
 import asyncHandler from "express-async-handler";
-import jwt from "jsonwebtoken";
 import { authenticateJWT } from "../middlewares/jwtHandler";
 
 const router = Router();
@@ -21,6 +17,14 @@ router.get(
         id: req.user.id,
       },
     });
+
+    res.status(201).json({
+      data: {
+        semesters: semesters
+      },
+      error: null
+    })
+
   })
 );
 
@@ -43,7 +47,7 @@ router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
 
 }))
 
-router.put("/:id", authenticateJWT, asyncHandler(async (req, res) => {
+router.put("/update/:id", authenticateJWT, asyncHandler(async (req, res) => {
     if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
     const newSemester = await prisma.semester.update({
@@ -64,7 +68,7 @@ router.put("/:id", authenticateJWT, asyncHandler(async (req, res) => {
 
 }))
 
-  router.delete("/:id", authenticateJWT, asyncHandler(async (req, res) => {
+  router.delete("/delete/:id", authenticateJWT, asyncHandler(async (req, res) => {
     if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
     const semester = await prisma.semester.delete({
