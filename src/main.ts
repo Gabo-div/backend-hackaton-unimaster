@@ -1,8 +1,9 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes";
 import { errorHandler } from "./middlewares/errorHandler";
+import cors from "cors";
 require("express-async-errors");
-import usersRoutes from './routes/users.routes'
+import usersRoutes from "./routes/users.routes";
 // import semestersRoutes from './routes/semesters.routes'
 // import subjectsRoutes from './routes/subjects.routes'
 // import assignmentsRoutes from './routes/assignments.routes'
@@ -10,6 +11,11 @@ import usersRoutes from './routes/users.routes'
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
