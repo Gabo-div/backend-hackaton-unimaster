@@ -8,7 +8,7 @@ import semestersRoutes from "./routes/semesters.routes";
 import subjectsRoutes from "./routes/subjects.routes";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 import { User } from "./types/User";
 

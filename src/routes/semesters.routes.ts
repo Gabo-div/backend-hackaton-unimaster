@@ -11,20 +11,10 @@ import { authenticateJWT } from "../middlewares/jwtHandler";
 const router = Router();
 
 router.get(
-  "/show",
-  asyncHandler(async (req, res) => {
-    const users = await prisma.user.findMany();
-    res.json(users);
-  })
-);
-
-router.get(
   "/",
   authenticateJWT,
   asyncHandler(async (req, res) => {
     if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
-
-    console.log(req.user);
 
     const semesters = await prisma.semester.findMany({
       where: {
@@ -34,11 +24,62 @@ router.get(
   })
 );
 
-//   // res.status(201).json({
-//   //   data: {
-//   //     user: userData,
-//   //   },
-//   //   error: null,
-//   // });
+router.post("/add", authenticateJWT, asyncHandler(async (req, res) => {
+    if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+
+    const newSemester = await prisma.semester.create({
+      data: {
+        name: req.body.name,
+        userId: req.user.id 
+      }
+    })
+
+    res.status(201).json({
+      data: {
+        semester: newSemester
+      },
+      error: null
+    })
+
+}))
+
+router.put("/:id", authenticateJWT, asyncHandler(async (req, res) => {
+    if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+
+    const newSemester = await prisma.semester.update({
+
+      where: {
+        id: +req.params.id
+      }, 
+
+      data: req.body.name
+    })
+
+    res.status(201).json({
+      data: {
+        semester: newSemester
+      },
+      error: null
+    })
+
+}))
+
+  router.delete("/:id", authenticateJWT, asyncHandler(async (req, res) => {
+    if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+
+    const semester = await prisma.semester.delete({
+      where: {
+        id: +req.params.id
+      }  
+    })
+
+    res.status(201).json({
+      data: {
+        semester: semester
+      },
+      error: null
+    })
+
+  }))
 
 export default router;
