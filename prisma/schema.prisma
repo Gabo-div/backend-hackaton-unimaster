@@ -43,7 +43,8 @@ model Assignment {
   type        String?
   value       Int
   points      Int?
-  date        DateTime
+  date        DateTime?
+  done        Boolean @default(false)
 
   subject   Subject? @relation(fields: [subjectId], references: [id])
   subjectId Int?
