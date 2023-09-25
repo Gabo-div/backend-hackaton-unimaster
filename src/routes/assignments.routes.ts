@@ -18,90 +18,96 @@ router.get(
 
     const assignment = await prisma.assignment.findMany({
       where: {
-        id: +req.params.subjectId,
+        subjectId: +req.params.subjectId,
       },
-    })
+    });
 
     res.status(200).json({
       data: {
-        subject: assignment
+        subject: assignment,
       },
-      error: null
-    })
-
+      error: null,
+    });
   })
 );
 
+router.post(
+  "/:subjectId",
+  authenticateJWT,
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
-router.post("/:subjectId", authenticateJWT, asyncHandler(async (req, res) => {
-  if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+    const { name, description, type, value, points, date, done } = req.body;
 
-  const {name, description, type, value, points, date, done} = req.body
+    const newAssignment = await prisma.assignment.create({
+      data: {
+        name,
+        description,
+        type,
+        value,
+        points,
+        date,
+        done,
+        subjectId: +req.params.subjectId,
+      },
+    });
 
-  const newAssignment = await prisma.assignment.create({
-    data: {
-      name, 
-      description,
-      type,
-      value, 
-      points,
-      date,
-      done,
-      subjectId: +req.params.subjectId 
-    }
-
+    res.status(201).json({
+      data: {
+        subject: newAssignment,
+      },
+      error: null,
+    });
   })
+);
 
-  res.status(201).json({
-    data: {
-      subject: newAssignment 
-    },
-    error: null
+router.put(
+  "/:assignmentId",
+  authenticateJWT,
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+
+    const { name, description, type, value, points, date, done } = req.body;
+
+    const newAssignment = await prisma.assignment.update({
+      where: {
+        id: +req.params.assignmentId,
+      },
+
+      data: {
+        name,
+        description,
+        type,
+        value,
+        points,
+        date,
+        done,
+      },
+    });
+
+    res.status(201).json({
+      data: {
+        assignment: newAssignment,
+      },
+      error: null,
+    });
   })
-}))
+);
 
-router.put("/:assignmentId", authenticateJWT, asyncHandler(async (req, res) => {
-  if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
+router.delete(
+  "/:assignmentId",
+  authenticateJWT,
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
 
-  const {name, description, type, value, points, date, done} = req.body
+    const assignment = await prisma.assignment.delete({
+      where: {
+        id: +req.params.assignmentId,
+      },
+    });
 
-  const newAssignment = await prisma.assignment.update({
-    where: {
-      id: +req.params.assignmentId,
-    },
-
-    data: {
-      name, 
-      description,
-      type,
-      value, 
-      points,
-      date,
-      done,
-    }
+    res.status(204).end();
   })
-
-  res.status(201).json({
-    data: {
-      assignment: newAssignment
-    },
-    error: null
-  })
-
-}))
-
-router.delete("/:assignmentId", authenticateJWT, asyncHandler(async (req, res) => {
-  if (!req.user) throw new HTTPError(401, ErrorCode.UNAUTHORIZED, "User not authorized");
-
-
-  const assignment = await prisma.assignment.delete({
-    where: {
-      id: +req.params.assignmentId,
-    }
-  })
-
-  res.status(204).end()
-
-}))
+);
 
 export default router;

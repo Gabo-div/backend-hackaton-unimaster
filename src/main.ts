@@ -6,6 +6,7 @@ require("express-async-errors");
 import semestersRoutes from "./routes/semesters.routes";
 import subjectsRoutes from "./routes/subjects.routes";
 import assignmentsRoutes from "./routes/assignments.routes"
+import usersRoutes from "./routes/users.routes"
 
 const app = express();
 const PORT = process.env.PORT;
@@ -28,7 +29,7 @@ app.use(
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
-//app.use('/api/users', usersRoutes);
+app.use('/api/users', usersRoutes);
 app.use("/api/semesters", semestersRoutes);
 app.use("/api/subjects", subjectsRoutes);
 app.use('/api/assignments', assignmentsRoutes);
